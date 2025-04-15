@@ -1,4 +1,4 @@
-# Projet App music 
+# Projet App Talk
 
 Pensez à créer le dossier `db_data`
 
