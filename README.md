@@ -7,6 +7,12 @@ Commande pour tout remettre à jour
 
 ```bash
 docker compose down --volumes --remove-orphans && docker system prune -af --volumes
+
+
+# démarrage 
+docker compose up -d
+
+docker compose down
 ```
 
 ## Connexion à un conteneur 
