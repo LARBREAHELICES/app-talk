@@ -15,7 +15,6 @@ export const useTalkStore = create((set) => ({
       if (!res.ok) throw new Error('Failed to fetch talks');
 
       const data = await res.json();
-      console.log(data);
       set({ talks: data, isLoading: false });
     } catch (err) {
       set({ error: err.message, isLoading: false });
