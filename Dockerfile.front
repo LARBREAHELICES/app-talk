@@ -1,0 +1,17 @@
+# Build stage
+FROM node:23-alpine AS base 
+WORKDIR /app
+
+# Copy package.json and package-lock.json
+COPY ./front/package*.json ./
+
+RUN npm install
+RUN npm install vite
+
+COPY ./front .
+
+# Expose the port Vite runs on
+EXPOSE 5173
+
+# Command to start the Vite development server
+CMD ["npm", "run", "dev"]

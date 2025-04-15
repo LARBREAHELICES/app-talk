@@ -1,0 +1,60 @@
+name: api-music
+
+services:
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile.back
+    container_name: php-app
+    ports:
+      - "8080:80"
+    volumes:
+      - ./api:/var/www/html
+      - ./config/opcache.ini:/usr/local/etc/php/conf.d/opcache.ini
+      - ./config/custom.ini:/usr/local/etc/php/conf.d/custom.ini
+    depends_on:
+      - db
+    networks:
+      - app_network
+
+  db:
+    image: mysql:latest
+    container_name: mysql-db
+    ports:
+        - "3301:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: admin  # Utiliser uniquement MYSQL_ROOT_PASSWORD
+      MYSQL_DATABASE: db          # Base de données par défaut
+    volumes:
+      - ./db_data:/var/lib/mysql
+    networks:
+      - app_network
+
+  adminer:
+    image: adminer
+    ports:
+      - "8088:8080" # map les ports machine et conteneur
+    networks:
+      - app_network
+
+  front:
+    build:
+      context: .
+      dockerfile: Dockerfile.front
+    container_name: app-front-music
+    volumes:
+      - ./front:/app
+      - /app/node_modules # évite d'écraser les modules
+    ports:
+      - "5175:5173"  # Map port 5175 in the container to port 5173 on the host
+    networks:
+      - app_network
+
+# Volumes pour persistance de données
+volumes:
+  db_data:
+
+# Réseaux pour la communication entre services
+networks:
+  app_network:
+    driver: bridge
