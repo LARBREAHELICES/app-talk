@@ -1,23 +1,42 @@
 // src/stores/useTalkStore.js
 
-import { create } from 'zustand';
+import { create } from 'zustand'
+import { combine } from 'zustand/middleware'
 
-export const useTalkStore = create((set) => ({
-  talks: [],
-  isLoading: false,
-  error: null,
+const apiUrl = import.meta.env.VITE_API_URL
 
-  fetchTalks: async () => {
-    set({ isLoading: true, error: null });
+export const useTalkStore = create(
+  combine(
+    {
+      talks: [],
+      isLoading: false,
+      error: null,
+    },
+    (set, get) => ({
+      fetchAllTalks: async () => {
+        set({ isLoading: true, error: null });
+        try {
+          const res = await fetch(`${apiUrl}/api/talks/all`); // 💡 Adapte à ton endpoint
+          if (!res.ok) throw new Error('Failed to fetch talks');
 
-    try {
-      const res = await fetch('http://localhost:8080/api/talks'); // 💡 Adapte à ton endpoint
-      if (!res.ok) throw new Error('Failed to fetch talks');
+          const data = await res.json();
+          set({ talks: data, isLoading: false });
+        } catch (err) {
+          set({ error: err.message, isLoading: false });
+        }
+      },
+      fetchFuturTalks: async () => {
+        set({ isLoading: true, error: null });
+        try {
+          const res = await fetch(`${apiUrl}/api/talks/futur`); // 💡 Adapte à ton endpoint
+          if (!res.ok) throw new Error('Failed to fetch talks');
 
-      const data = await res.json();
-      set({ talks: data, isLoading: false });
-    } catch (err) {
-      set({ error: err.message, isLoading: false });
-    }
-  }
-}));
+          const data = await res.json();
+          set({ talks: data, isLoading: false });
+        } catch (err) {
+          set({ error: err.message, isLoading: false });
+        }
+      }
+    })
+  )
+)

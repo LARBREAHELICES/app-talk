@@ -1,21 +1,22 @@
 import { useEffect } from "react";
-import { useTalkStore } from "../store/useTalksStore";
+import { useTalkStore } from "../../store/useTalksStore";
 
-function Talks() {
+function Sidebar() {
   const {
-    fetchTalks,
-    talks: { talks },
+    fetchFuturTalks,
+    talks :{talks},
     isLoading,
-  } = useTalkStore((state) => state);
+  } = useTalkStore((state) => state)
 
   useEffect(() => {
-    fetchTalks();
+    fetchFuturTalks();
   }, []);
+
 
   if (isLoading) return <p>Loading ...</p>;
 
   return (
-    <section className="bg-[#f1ebe5] p-6 rounded-2xl shadow-md">
+    <aside className="bg-[#f1ebe5] p-6 rounded-2xl shadow-md">
       <h2 className="text-2xl font-bold mb-4 text-[#4b3f33]">Upcoming Talks</h2>
       {talks &&
         talks.map((talk, i) => (
@@ -34,8 +35,8 @@ function Talks() {
             </div>
           </div>
         ))}
-    </section>
+    </aside>
   );
 }
 
-export default Talks;
+export default Sidebar
