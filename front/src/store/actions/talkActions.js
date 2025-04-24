@@ -5,6 +5,7 @@ export const createTalkActions = (set, get) => ({
     setStatus: (status) => set({ status }),
     setObjective: (objective) => set({ objective }),
     setScheduledAt: (scheduled_at) => set({ scheduled_at }),
+    setServerMessage: (serverMessage) => set({ serverMessage }),
   
     addPresenter: (presenter) =>{
       set({ presenters: [...get().presenters, presenter] })

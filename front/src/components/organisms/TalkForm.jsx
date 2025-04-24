@@ -7,6 +7,7 @@ import CustomDatePicker from "../molecules/CustomDatePicker";
 import InputWithError from "../molecules/InputWithError";
 import TextareaWithError from "../molecules/TextareaWithError";
 import SuccessMessage from "../atoms/SuccessMessage";
+import ErrorMessage from "../atoms/ErrorMessage";
 
 function TalkForm(props) {
   const {
@@ -17,12 +18,14 @@ function TalkForm(props) {
     addPresenter,
     removePresenter,
     setScheduledAt,
+    setServerMessage,
     title,
     topic,
     duration,
     objective,
     presenters,
     scheduled_at,
+    serverMessage,
     fetchSave,
   } = useSaveTalk((state) => state);
 
@@ -36,8 +39,7 @@ function TalkForm(props) {
     email: "",
     objective: "",
     presenter: "",
-    errorMessage: "",
-    message: "",
+    errorMessage: ""
   });
 
   const hasValidationErrors =
@@ -49,14 +51,14 @@ function TalkForm(props) {
 
   useEffect(() => {
    const time = setTimeout(() => {
-      setErrors({ ...errors, message: "" });
-    }, 1000);
+      setServerMessage(null)
+    }, 5*1000);
     
     () => {
       clearTimeout(time)
     }
 
-  }, [errors.message]);
+  }, [serverMessage]);
 
   const handleAddPresenter = () => {
     if (presenters.filter((p) => p.email === presenterEmail.trim()).length) {
@@ -120,7 +122,6 @@ function TalkForm(props) {
       objective: "",
       presenter: "",
       errorMessage: "",
-      message: "The talk has been successfully added.",
     });
   };
 
@@ -131,7 +132,8 @@ function TalkForm(props) {
         <h3 className="text-lg font-semibold text-[#4b3f33]">
           Talk Parameters 
         </h3>
-        {errors.message !== '' && <SuccessMessage message={errors.message} />}
+        {serverMessage?.type === 'success' ? <SuccessMessage message={serverMessage} /> : 
+        serverMessage ?  <ErrorMessage  message={serverMessage} /> : null}
         <InputWithError
           status={"*"}
           labelName="title"

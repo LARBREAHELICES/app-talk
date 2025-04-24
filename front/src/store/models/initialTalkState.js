@@ -6,5 +6,7 @@ export const initialTalkState = {
   presenters: [],
   objective: '',
   isLoading: false,
-  scheduled_at: ''
+  scheduled_at: '',
+  refresh : 0,
+  serverMessage : null
 };  

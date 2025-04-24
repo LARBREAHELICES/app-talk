@@ -6,6 +6,8 @@ function CustomDatePicker({ value, onChange, label = "Date" }) {
   const [month, setMonth] = useState(today.getMonth());
   const [year, setYear] = useState(today.getFullYear());
   const [selectedDate, setSelectedDate] = useState(value ? new Date(value) : today);
+  const [hour, setHour] = useState(String(today.getHours()).padStart(2, "0"));
+  const [minute, setMinute] = useState(String(today.getMinutes()).padStart(2, "0"));
 
   const toggleCalendar = () => setShowCalendar(!showCalendar);
 
@@ -15,15 +17,16 @@ function CustomDatePicker({ value, onChange, label = "Date" }) {
 
   useEffect(() => {
     if (!value) {
-      onChange(today.toISOString().split("T")[0]);
+      const initDate = new Date();
+      onChange(initDate.toISOString());
     }
   }, []);
 
   const handleDateClick = (day) => {
-    const newDate = new Date(year, month, day);
+    const newDate = new Date(year, month, day, parseInt(hour), parseInt(minute));
     setSelectedDate(newDate);
     setShowCalendar(false);
-    onChange(newDate.toISOString().split("T")[0]);
+    onChange(newDate.toISOString());
   };
 
   const prevMonth = () => {
@@ -89,6 +92,30 @@ function CustomDatePicker({ value, onChange, label = "Date" }) {
             </div>
           ))}
         </div>
+        <div className="flex gap-2 mt-4">
+          <select
+            value={hour}
+            onChange={(e) => setHour(e.target.value)}
+            className="p-2 border rounded-lg"
+          >
+            {Array.from({ length: 24 }, (_, i) => (
+              <option key={i} value={String(i).padStart(2, "0")}>
+                {String(i).padStart(2, "0")} h
+              </option>
+            ))}
+          </select>
+          <select
+            value={minute}
+            onChange={(e) => setMinute(e.target.value)}
+            className="p-2 border rounded-lg"
+          >
+            {["00", "15", "30", "45"].map((m) => (
+              <option key={m} value={m}>
+                {m} min
+              </option>
+            ))}
+          </select>
+        </div>
       </div>
     );
   };
@@ -99,9 +126,15 @@ function CustomDatePicker({ value, onChange, label = "Date" }) {
       <input
         type="text"
         readOnly
-        value={selectedDate ? selectedDate.toISOString().split("T")[0] : ""}
+        value={selectedDate ? selectedDate.toLocaleString("fr-FR", {
+          day: "2-digit",
+          month: "2-digit",
+          year: "numeric",
+          hour: "2-digit",
+          minute: "2-digit",
+        }) : ""}
         onClick={toggleCalendar}
-        placeholder="Select a date"
+        placeholder="Sélectionner une date"
         className="w-full p-3 rounded-xl border border-gray-300 bg-white cursor-pointer"
       />
       {showCalendar && renderCalendar()}
@@ -109,4 +142,4 @@ function CustomDatePicker({ value, onChange, label = "Date" }) {
   );
 }
 
-export default CustomDatePicker
+export default CustomDatePicker;

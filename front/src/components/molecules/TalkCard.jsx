@@ -10,6 +10,16 @@ function TalkCard({ talk, to }) {
       </h3>
       <p className="text-sm text-[#6c5c4f]">{talk.duration} min</p>
       <p className="text-sm text-[#6c5c4f]">{talk.topic}</p>
+      <p className="text-sm text-[#6c5c4f]">
+        {" "}
+        {new Date(talk.scheduled_at).toLocaleString("fr-FR", {
+          day: "2-digit",
+          month: "2-digit",
+          year: "numeric",
+          hour: "2-digit",
+          minute: "2-digit",
+        })}
+      </p>
       <p className="text-sm text-[#6c5c4f] line-clamp-2">{talk.objective}</p>
       {talk.presenters?.map((presenter, i) => (
         <p key={i} className="text-sm text-[#6c5c4f]">

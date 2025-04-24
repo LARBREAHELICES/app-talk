@@ -46,7 +46,7 @@ class TalkRepository extends ServiceEntityRepository
         return $this->createQueryBuilder('t')
             ->andWhere('t.scheduled_at > :now')
             ->setParameter('now', new \DateTime()) 
-            ->orderBy('t.scheduled_at', 'DESC')
+            ->orderBy('t.scheduled_at', 'ASC')
             ->setMaxResults($limit)
             ->getQuery()
             ->getResult() // Utiliser getResult() pour obtenir un tableau de résultats

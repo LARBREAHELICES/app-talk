@@ -1,6 +1,7 @@
 import { useEffect } from "react"
 import { useTalkStore } from "../../store/useTalksStore"
 import TalkCard from "../molecules/TalkCard"
+import { useSaveTalk } from "../../store/useSaveTalk";
 
 function SidebarWithRecentTalks() {
   const {
@@ -9,11 +10,15 @@ function SidebarWithRecentTalks() {
     isLoading,
   } = useTalkStore((state) => state);
 
+  const { refresh } = useSaveTalk(state => state )
+
   useEffect(() => {
     fetchFuturTalks()
-  }, []);
+    console.log('REFRESH useffect', refresh)
 
-  if (isLoading) return <p>Loading ...</p>;
+  }, [refresh])
+
+  if (isLoading) return <p>Loading ...</p>
 
   return (
     <section className="bg-[#f1ebe5] p-6 rounded-2xl shadow-md">
@@ -24,7 +29,7 @@ function SidebarWithRecentTalks() {
         ))}
       </div>
     </section>
-  );
+  )
 }
 
 export default SidebarWithRecentTalks

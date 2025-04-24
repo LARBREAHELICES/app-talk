@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\Talk;
 use App\Entity\User;
+use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -33,7 +34,7 @@ final class TalkController extends AbstractController
     }
 
     #[Route('/api/talk/create', name: 'app_talk_save', methods: ['POST'])]
-    public function saveTalk(EntityManagerInterface $manager, Request $request): JsonResponse
+    public function saveTalk(EntityManagerInterface $manager, Request $request, UserRepository $userRepository): JsonResponse
     {
         $data = json_decode($request->getContent(), true);
 
@@ -50,11 +51,20 @@ final class TalkController extends AbstractController
 
         if (!empty($data['presenters'])) {
             foreach ($data['presenters'] as $p) {
-                $user= new User();
+                // Vérifier si l'utilisateur existe déjà
+                $existingUser = $userRepository->findOneBy(['email' => $p['email']]);
+    
+                if ($existingUser) {
+                    return $this->json([
+                        'error' => "L'utilisateur avec l'email {$p['email']} existe déjà."
+                    ], 409); // Conflit
+                }
+    
+                $user = new User();
                 $user->setEmail($p['email']);
                 $user->setUsername($p['username']);
-
-                $talk->addPresenter(presenter: $user);
+    
+                $talk->addPresenter($user);
             }
         }
 
@@ -63,7 +73,8 @@ final class TalkController extends AbstractController
 
         return $this->json([
             'talk' =>  $talk,
-            'response' => 'Ok'
+            'response' => 'Ok',
+            'messager' => ''
         ], 200, [], ['groups' => 'talk:read']);
     }
 
