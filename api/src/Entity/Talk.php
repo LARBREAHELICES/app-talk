@@ -13,6 +13,7 @@ use Symfony\Component\Serializer\Annotation\Groups;
 #[ORM\Entity(repositoryClass: TalkRepository::class)]
 class Talk
 {
+    #[Groups(['talk:read'])]
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
@@ -42,12 +43,17 @@ class Talk
      * @var Collection<int, User>
      */
     #[Groups(['talk:read'])]
-    #[ORM\ManyToMany(targetEntity: User::class, inversedBy: 'talks')]
+    #[ORM\ManyToMany(targetEntity: User::class, inversedBy: 'talks',  cascade: ['persist'])]
     private Collection $presenters;
+
+    #[Groups(['talk:read'])]
+    #[ORM\Column(nullable: true)]
+    private ?\DateTimeImmutable $scheduled_at = null;
 
     public function __construct()
     {
         $this->presenters = new ArrayCollection();
+        $this->setStatus(TalkStatus::Ready);
     }
 
     public function getId(): ?int
@@ -135,6 +141,18 @@ class Talk
     public function removePresenter(User $presenter): static
     {
         $this->presenters->removeElement($presenter);
+
+        return $this;
+    }
+
+    public function getScheduledAt(): ?\DateTimeImmutable
+    {
+        return $this->scheduled_at;
+    }
+
+    public function setScheduledAt(?\DateTimeImmutable $scheduled_at): static
+    {
+        $this->scheduled_at = $scheduled_at;
 
         return $this;
     }

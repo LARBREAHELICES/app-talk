@@ -40,4 +40,26 @@ class TalkRepository extends ServiceEntityRepository
     //            ->getOneOrNullResult()
     //        ;
     //    }
+
+    public function findFuturTasks(int $limit = 3): ?array
+    {
+        return $this->createQueryBuilder('t')
+            ->andWhere('t.scheduled_at > :now')
+            ->setParameter('now', new \DateTime()) 
+            ->orderBy('t.scheduled_at', 'DESC')
+            ->setMaxResults($limit)
+            ->getQuery()
+            ->getResult() // Utiliser getResult() pour obtenir un tableau de résultats
+        ;
+    }
+
+    public function findTasks(): ?array
+{
+    return $this->createQueryBuilder('t')
+        ->andWhere('t.scheduled_at > :now')
+        ->setParameter('now', new \DateTime()) // Définit le paramètre :now avec la date actuelle
+        ->orderBy('t.scheduled_at', 'DESC') // Trie par date de manière décroissante
+        ->getQuery()
+        ->getResult(); // Retourne un tableau de résultats sans limite
+}
 }
