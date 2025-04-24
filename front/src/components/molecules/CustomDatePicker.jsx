@@ -1,17 +1,23 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 function CustomDatePicker({ value, onChange, label = "Date" }) {
   const today = new Date();
   const [showCalendar, setShowCalendar] = useState(false);
-  const [selectedDate, setSelectedDate] = useState(value ? new Date(value) : null);
   const [month, setMonth] = useState(today.getMonth());
   const [year, setYear] = useState(today.getFullYear());
+  const [selectedDate, setSelectedDate] = useState(value ? new Date(value) : today);
 
   const toggleCalendar = () => setShowCalendar(!showCalendar);
 
   const getDaysInMonth = (year, month) => new Date(year, month + 1, 0).getDate();
 
   const getFirstDayOfMonth = (year, month) => new Date(year, month, 1).getDay() || 7;
+
+  useEffect(() => {
+    if (!value) {
+      onChange(today.toISOString().split("T")[0]);
+    }
+  }, []);
 
   const handleDateClick = (day) => {
     const newDate = new Date(year, month, day);
@@ -21,23 +27,21 @@ function CustomDatePicker({ value, onChange, label = "Date" }) {
   };
 
   const prevMonth = () => {
-    setMonth((prev) => {
-      if (prev === 0) {
-        setYear((y) => y - 1);
-        return 11;
-      }
-      return prev - 1;
-    });
+    if (month === 0) {
+      setYear(year - 1);
+      setMonth(11);
+    } else {
+      setMonth(month - 1);
+    }
   };
 
   const nextMonth = () => {
-    setMonth((prev) => {
-      if (prev === 11) {
-        setYear((y) => y + 1);
-        return 0;
-      }
-      return prev + 1;
-    });
+    if (month === 11) {
+      setYear(year + 1);
+      setMonth(0);
+    } else {
+      setMonth(month + 1);
+    }
   };
 
   const renderCalendar = () => {
@@ -105,4 +109,4 @@ function CustomDatePicker({ value, onChange, label = "Date" }) {
   );
 }
 
-export default CustomDatePicker;
+export default CustomDatePicker

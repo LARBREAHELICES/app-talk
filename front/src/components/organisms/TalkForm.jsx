@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import Button from "../atoms/Button";
 import Presenter from "../molecules/Presenter";
@@ -6,6 +6,7 @@ import { useSaveTalk } from "../../store/useSaveTalk";
 import CustomDatePicker from "../molecules/CustomDatePicker";
 import InputWithError from "../molecules/InputWithError";
 import TextareaWithError from "../molecules/TextareaWithError";
+import SuccessMessage from "../atoms/SuccessMessage";
 
 function TalkForm(props) {
   const {
@@ -36,6 +37,7 @@ function TalkForm(props) {
     objective: "",
     presenter: "",
     errorMessage: "",
+    message: "",
   });
 
   const hasValidationErrors =
@@ -44,6 +46,17 @@ function TalkForm(props) {
     String(duration).trim() == "0" ||
     !objective.trim() ||
     presenters.length === 0;
+
+  useEffect(() => {
+   const time = setTimeout(() => {
+      setErrors({ ...errors, message: "" });
+    }, 1000);
+    
+    () => {
+      clearTimeout(time)
+    }
+
+  }, [errors.message]);
 
   const handleAddPresenter = () => {
     if (presenters.filter((p) => p.email === presenterEmail.trim()).length) {
@@ -97,6 +110,8 @@ function TalkForm(props) {
     await fetchSave(); // fait le POST et reset le form via Zustand
     setPresenterName("");
     setPresenterEmail("");
+    setScheduledAt("");
+
     setErrors({
       title: "",
       topic: "",
@@ -105,6 +120,7 @@ function TalkForm(props) {
       objective: "",
       presenter: "",
       errorMessage: "",
+      message: "The talk has been successfully added.",
     });
   };
 
@@ -113,8 +129,9 @@ function TalkForm(props) {
       <h2 className="text-2xl font-bold text-[#4b3f33]">Create a Talk</h2>
       <div className="space-y-4">
         <h3 className="text-lg font-semibold text-[#4b3f33]">
-          Talk Parameters
+          Talk Parameters 
         </h3>
+        {errors.message !== '' && <SuccessMessage message={errors.message} />}
         <InputWithError
           status={"*"}
           labelName="title"
@@ -174,7 +191,7 @@ function TalkForm(props) {
           className="w-full p-3 rounded-xl border border-[#c8bfb6] bg-[#fcfaf8]"
           error={errors.objective}
         />
-        <CustomDatePicker onChange={setScheduledAt} />
+        <CustomDatePicker onChange={setScheduledAt} value={scheduled_at} />
       </div>
 
       <div className="space-y-4">
@@ -219,4 +236,4 @@ function TalkForm(props) {
   );
 }
 
-export default TalkForm
+export default TalkForm;
