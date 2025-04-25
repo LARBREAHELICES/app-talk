@@ -2,14 +2,15 @@ import { useEffect, useState } from "react";
 
 import Button from "../atoms/Button";
 import Presenter from "../molecules/Presenter";
-import { useSaveTalk } from "../../store/useSaveTalk";
 import CustomDatePicker from "../molecules/CustomDatePicker";
 import InputWithError from "../molecules/InputWithError";
 import TextareaWithError from "../molecules/TextareaWithError";
 import SuccessMessage from "../atoms/SuccessMessage";
 import ErrorMessage from "../atoms/ErrorMessage";
 
-function TalkForm(props) {
+import { useTalkCrudStore } from "../../store/useTalkCrudStore";
+
+function TalkForm({ mode = "create", initialTalk = null, onSubmit }) {
   const {
     setTitle,
     setTopic,
@@ -26,8 +27,7 @@ function TalkForm(props) {
     presenters,
     scheduled_at,
     serverMessage,
-    fetchSave,
-  } = useSaveTalk((state) => state);
+  } = useTalkCrudStore((state) => state);
 
   const [presenterName, setPresenterName] = useState("");
   const [presenterEmail, setPresenterEmail] = useState("");
@@ -39,7 +39,7 @@ function TalkForm(props) {
     email: "",
     objective: "",
     presenter: "",
-    errorMessage: ""
+    errorMessage: "",
   });
 
   const hasValidationErrors =
@@ -50,14 +50,24 @@ function TalkForm(props) {
     presenters.length === 0;
 
   useEffect(() => {
-   const time = setTimeout(() => {
-      setServerMessage(null)
-    }, 5*1000);
-    
-    () => {
-      clearTimeout(time)
+    if (mode === "edit" && initialTalk) {
+      setTitle(initialTalk.title || "");
+      setTopic(initialTalk.topic || "");
+      setDuration(initialTalk.duration || 0);
+      setObjective(initialTalk.objective || "");
+      setScheduledAt(initialTalk.scheduled_at || "");
+      initialTalk.presenters?.forEach(addPresenter);
     }
+  }, []);
 
+  useEffect(() => {
+    const time = setTimeout(() => {
+      setServerMessage(null);
+    }, 5 * 1000);
+
+    () => {
+      clearTimeout(time);
+    };
   }, [serverMessage]);
 
   const handleAddPresenter = () => {
@@ -109,7 +119,7 @@ function TalkForm(props) {
 
   const handleSave = async (e) => {
     e.preventDefault();
-    await fetchSave(); // fait le POST et reset le form via Zustand
+    await onSubmit(); // onSubmit fourni depuis le parent, qui décide s’il fait un POST ou un PUT
     setPresenterName("");
     setPresenterEmail("");
     setScheduledAt("");
@@ -127,13 +137,15 @@ function TalkForm(props) {
 
   return (
     <>
-      <h2 className="text-2xl font-bold text-[#4b3f33]">Create a Talk</h2>
+      <h2 className="text-2xl font-bold text-[#4b3f33]">
+        {mode === "edit" ? "Edit Talk" : "Create a Talk"}
+      </h2>
       <div className="space-y-4">
-        <h3 className="text-lg font-semibold text-[#4b3f33]">
-          Talk Parameters 
-        </h3>
-        {serverMessage?.type === 'success' ? <SuccessMessage message={serverMessage} /> : 
-        serverMessage ?  <ErrorMessage  message={serverMessage} /> : null}
+        {serverMessage?.type === "success" ? (
+          <SuccessMessage message={serverMessage} />
+        ) : serverMessage ? (
+          <ErrorMessage message={serverMessage} />
+        ) : null}
         <InputWithError
           status={"*"}
           labelName="title"
@@ -226,13 +238,17 @@ function TalkForm(props) {
           </div>
         )}
       </div>
+      <h2 className="text-2xl font-bold text-[#4b3f33]">
+        {mode === "edit" ? "Edit Talk" : "Create a Talk"}
+      </h2>
+
       <Button
         variant={hasValidationErrors ? "disabled" : "primary"}
         type="submit"
         onClick={handleSave}
         className="w-full mt-6"
       >
-        Save Talk
+        {mode === "edit" ? "Update Talk" : "Save Talk"}
       </Button>
     </>
   );

@@ -1,16 +1,17 @@
 import { useEffect } from "react"
-import { useTalkStore } from "../../store/useTalksStore"
+import { useTalkListStore } from "../../store/useTalkListStore"
+import { useTalkCrudStore } from "../../store/useTalkCrudStore"
+
 import TalkCard from "../molecules/TalkCard"
-import { useSaveTalk } from "../../store/useSaveTalk";
 
 function SidebarWithRecentTalks() {
   const {
     fetchFuturTalks,
     talks: { talks },
     isLoading,
-  } = useTalkStore((state) => state);
+  } = useTalkListStore((state) => state);
 
-  const { refresh } = useSaveTalk(state => state )
+  const { refresh } = useTalkCrudStore(state => state )
 
   useEffect(() => {
     fetchFuturTalks()

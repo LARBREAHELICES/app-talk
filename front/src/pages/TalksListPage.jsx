@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { useTalkStore } from "../store/useTalksStore";
+import { useTalkListStore } from "../store/useTalkListStore";
 import TalkCard from "../components/molecules/TalkCard";
 
 function TalksListPage() {
@@ -7,7 +7,7 @@ function TalksListPage() {
     fetchAllTalks,
     talks: { talks },
     isLoading,
-  } = useTalkStore((state) => state);
+  } = useTalkListStore((state) => state);
 
   useEffect(() => {
     fetchAllTalks();
@@ -23,7 +23,7 @@ function TalksListPage() {
         {talks?.length > 0 ? (
           talks.map((talk, i) => (
             <>
-              <TalkCard key={i} talk={talk}  to={`/talk/edit/{talk.id}`} />
+              <TalkCard key={i} talk={talk}  to={`/talk/edit/${talk.id}`} />
             </>
           ))
         ) : (

@@ -5,7 +5,7 @@ import { combine } from 'zustand/middleware'
 
 const apiUrl = import.meta.env.VITE_API_URL
 
-export const useTalkStore = create(
+export const useTalkListStore = create(
   combine(
     {
       talks: [],
