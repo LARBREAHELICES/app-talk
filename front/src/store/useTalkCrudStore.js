@@ -67,12 +67,13 @@ export const useTalkCrudStore = create(
           if (!res.ok) throw new Error('Failed to fetch talks');
 
           const { talk } = await res.json()
+        
           set({
             title: talk.title,
             topic: talk.topic,
             duration: talk.duration,
             objective: talk.objective,
-            presenters: talk.presenters.map(p => p.username),
+            presenters: talk.presenters,
             isLoading: false,
           })
         } catch (err) {

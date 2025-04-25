@@ -57,6 +57,8 @@ function TalkForm({ mode = "create", initialTalk = null, onSubmit }) {
       setObjective(initialTalk.objective || "");
       setScheduledAt(initialTalk.scheduled_at || "");
       initialTalk.presenters?.forEach(addPresenter);
+
+      console.log(initialTalk)
     }
   }, []);
 
